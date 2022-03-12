@@ -1,10 +1,9 @@
 ﻿#include <iostream>
 #include <iomanip>
 using namespace std;
-void swap(double** p, int* tx, int* ty, int* m, int* n) {
+void swap(double** p, int* tx, int* ty, int* m, int* n, int* err) {
     double tmp;
     int tmpx = *tx, tmpy = *ty;
-sw:
     for (int i = tmpy; i < *m; i++) {
         if (p[i][tmpx] != 0) {
             for (int s = tmpx; s < *n; s++) {
@@ -15,11 +14,11 @@ sw:
             return;
         }
     }
-    tmpx++;
-    *tx = *tx + 1;
-    if (tmpx != *n && tmpy != *m) {
-        goto sw;
+    if (*m != 1 && *n / 2 != 1) {
+        *err = 1;
+        return;
     }
+    
 }
 void up(double** p, int* tx, int* ty, int* m, int* n) {
     int tmpx = *tx, tmpy = *ty;
@@ -47,15 +46,19 @@ void down(double** p, int* tx, int* ty, int* m, int* n) {
 }
 void print(double** p, int m, int n) {
     for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
+        for (int j = n / 2; j < n; j++) {
             cout << setw(2) << p[i][j] << " ";
         }
         cout << endl;
     }
 }
-void operation(double** p, int* tx, int* ty, int* m, int* n) {
+void operation(double** p, int* tx, int* ty, int* m, int* n,int* err) {
     int tmpy = *ty;
     double leader = p[tmpy][*tx];
+    if (leader == 0 && *m != 1 && *n / 2 != 1) {
+        *err = 1;
+        return;
+    }
     if (leader != 0) {
         for (int i = *tx; i < *n; i++) { //取得前導1
             if (leader != 1) {
@@ -66,14 +69,12 @@ void operation(double** p, int* tx, int* ty, int* m, int* n) {
             }
         }
         up(p, tx, ty, m, n); down(p, tx, ty, m, n);
-        cout << endl;
-        print(p, *m, *n);
     }
     *ty = *ty + 1; *tx = *tx + 1;
 }
 int main()
 {
-    int m, n, x = 0, y = 0,p = 0;
+    int m, n, x = 0, y = 0,err = 0;
     double** matrix;
     cout << "Please enter the matrix size(m*n):\nm=";
     cin >> m;
@@ -99,17 +100,22 @@ int main()
         }
 
     }
-    print(*&matrix, m, n);
     while (true)
     {
         if (matrix[y][x] == 0 && x < n && y < m) { //找出非零整數
-            swap(*&matrix, &x, &y, &m, &n);
+            swap(*&matrix, &x, &y, &m, &n, &err);
         }
-        operation(*&matrix, &x, &y, &m, &n);
-        if (x + 1 > n || y + 1 > m) {
+        operation(*&matrix, &x, &y, &m, &n ,&err);
+        if (x + 1 > n || y + 1 > m || err == 1) {
             break;
         }
     }
     cout << "\n\nAns:\n";
-    print(*&matrix, m, n);
+    if (err == 1) {
+        cout << "Inverse matrix error\n\n";
+    }
+    else {
+        print(*&matrix, m, n);
+    }
+    
 }
