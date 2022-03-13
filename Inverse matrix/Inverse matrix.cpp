@@ -55,7 +55,7 @@ void print(double** p, int m, int n) {
 void operation(double** p, int* tx, int* ty, int* m, int* n,int* err) {
     int tmpy = *ty;
     double leader = p[tmpy][*tx];
-    if (leader == 0 && *m != 1 && *n / 2 != 1) {
+    if (leader == 0) {
         *err = 1;
         return;
     }
